@@ -5,11 +5,8 @@ import jsdom from 'jsdom';
 import yaml from 'js-yaml';
 import puppeteer from 'puppeteer';
 import { getFileName, MessageTypes, printMessage } from '../utils/util.js';
-import {
-  IAutomationResultsStorage,
-  IResults,
-} from './AutomationResultsStorage.js';
-import { AutomationResult, Interaction } from './types.js';
+import { IAutomationResultsStorage } from './AutomationResultsStorage.js';
+import { AutomationResult, Interaction, IResults, OutputType } from 'types';
 
 interface AutomationProps {
   automationCount: number;
@@ -44,11 +41,6 @@ interface AdvancedConfig {
 }
 
 type Config = AdvancedConfig | SimpleConfig;
-
-export enum OutputType {
-  CHART = 'chart',
-  JSON = 'json',
-}
 
 type Flows = {
   [key: string]: string[];

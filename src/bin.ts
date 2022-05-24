@@ -4,21 +4,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import yargs from 'yargs';
-import automate, { OutputType } from './automation/automation.js';
+import automate from './automation/automation.js';
 import { MessageTypes, printMessage } from './utils/util.js';
 import { hideBin } from 'yargs/helpers';
 import { AutomationResultsStorage } from './automation/AutomationResultsStorage.js';
-
-export interface Options {
-  averageOf: number;
-  changeInterval: number;
-  includeMount: boolean;
-  page: string;
-  port: number;
-  watch: boolean | string;
-  headless: boolean;
-  output: OutputType;
-}
+import { Options, OutputType } from 'types';
 
 const { AUTOMATION_START, AUTOMATION_STOP, ERROR } = MessageTypes;
 

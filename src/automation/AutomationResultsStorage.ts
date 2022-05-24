@@ -1,12 +1,10 @@
-import { AutomationResult } from './types';
+import { AutomationResult, IResults } from 'types';
 
 export interface IAutomationResultsStorage {
   appendResult(flowKey: string, result: AutomationResult): void;
   removeResultsByKey(flowKey: string): void;
   getAllResults(): IResults;
 }
-
-export type IResults = Record<string, AutomationResult[]>;
 
 export class AutomationResultsStorage implements IAutomationResultsStorage {
   private storage: IResults = {};
