@@ -1,3 +1,5 @@
+# Inspired by the original [react-automation-profiler](https://github.com/rpivo/react-automation-profiler) which is not maintained anymore.
+
 # react-automation-profiler
 
 <p align="middle" float="left">
