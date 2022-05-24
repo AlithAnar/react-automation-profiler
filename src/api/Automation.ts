@@ -7,7 +7,10 @@ import {
   IResults,
 } from '../automation/AutomationResultsStorage.js';
 
-type APIOptions = Omit<Options, 'output' | 'watch' | 'changeInterval' | 'port'>;
+export type APIOptions = Omit<
+  Options,
+  'output' | 'watch' | 'changeInterval' | 'port'
+>;
 
 export class Automation {
   static async run({

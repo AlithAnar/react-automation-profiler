@@ -1,2 +1,3 @@
 import AutomationProfiler from './AutomationProfiler';
-export { AutomationProfiler };
+import { Automation } from './AutomationAPI';
+export { AutomationProfiler, Automation };
