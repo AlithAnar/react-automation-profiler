@@ -1,4 +1,4 @@
-import { AutomationResult, IResults } from 'types';
+import { AutomationResult, IResults } from '../interfaces';
 
 export interface IAutomationResultsStorage {
   appendResult(flowKey: string, result: AutomationResult): void;

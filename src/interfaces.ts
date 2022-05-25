@@ -41,7 +41,3 @@ export interface AutomationResult {
 }
 
 export type IResults = Record<string, AutomationResult[]>;
-
-export class AutomationAPI {
-  static run(options: APIOptions): Promise<IResults>;
-}

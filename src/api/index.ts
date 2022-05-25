@@ -2,7 +2,7 @@ import automate from '../automation/automation.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { AutomationResultsStorage } from '../automation/AutomationResultsStorage.js';
-import { APIOptions, IResults, OutputType } from 'types';
+import { IResults, APIOptions, OutputType } from '../interfaces.js';
 
 export class AutomationAPI {
   static async run({

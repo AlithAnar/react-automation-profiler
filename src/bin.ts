@@ -8,7 +8,7 @@ import automate from './automation/automation.js';
 import { MessageTypes, printMessage } from './utils/util.js';
 import { hideBin } from 'yargs/helpers';
 import { AutomationResultsStorage } from './automation/AutomationResultsStorage.js';
-import { Options, OutputType } from 'types';
+import { Options, OutputType } from './interfaces.js';
 
 const { AUTOMATION_START, AUTOMATION_STOP, ERROR } = MessageTypes;
 

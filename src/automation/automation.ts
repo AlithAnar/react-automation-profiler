@@ -6,7 +6,12 @@ import yaml from 'js-yaml';
 import puppeteer from 'puppeteer';
 import { getFileName, MessageTypes, printMessage } from '../utils/util.js';
 import { IAutomationResultsStorage } from './AutomationResultsStorage.js';
-import { AutomationResult, Interaction, IResults, OutputType } from 'types';
+import {
+  AutomationResult,
+  Interaction,
+  IResults,
+  OutputType,
+} from '../interfaces.js';
 
 interface AutomationProps {
   automationCount: number;

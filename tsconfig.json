@@ -3,6 +3,7 @@
     "baseUrl": "./src",
     "downlevelIteration": true,
     "esModuleInterop": true,
+    "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": ["DOM", "ESNext"],
