@@ -10,6 +10,7 @@ export class AutomationAPI {
     includeMount = false,
     page,
     preloadFilePath,
+    cookies,
     headless = true,
   }: APIOptions): Promise<IResults> {
     let results: IResults = {};
@@ -33,6 +34,7 @@ export class AutomationAPI {
         serverPort: 0,
         url: page,
         headless,
+        cookies,
         output: OutputType.JSON,
       };
 

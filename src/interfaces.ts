@@ -1,3 +1,5 @@
+import { Protocol } from 'puppeteer';
+
 export enum OutputType {
   CHART = 'chart',
   JSON = 'json',
@@ -12,6 +14,7 @@ export interface Options {
   headless: boolean;
   output: OutputType;
   preloadFilePath?: string;
+  cookies?: Protocol.Network.CookieParam[];
 }
 
 export type APIOptions = Omit<
