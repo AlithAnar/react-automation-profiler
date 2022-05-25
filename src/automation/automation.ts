@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import { minify } from 'html-minifier-terser';
 import jsdom from 'jsdom';
 import yaml from 'js-yaml';
-import puppeteer from 'puppeteer';
+import puppeteer, { Protocol } from 'puppeteer';
 import { getFileName, MessageTypes, printMessage } from '../utils/util.js';
 import { IAutomationResultsStorage } from './AutomationResultsStorage.js';
 import {
@@ -25,6 +25,7 @@ interface AutomationProps {
   headless: boolean;
   output: OutputType;
   preloadFilePath?: string;
+  cookies?: Protocol.Network.CookieParam[];
 }
 
 interface SimpleConfig {
@@ -78,6 +79,7 @@ export default async function automate(
     headless,
     output,
     preloadFilePath,
+    cookies,
   } = props;
 
   const MOUNT = 'Mount';
@@ -88,6 +90,10 @@ export default async function automate(
   if (preloadFilePath) {
     const preloadFile = await fs.readFile(preloadFilePath, 'utf8');
     await page.evaluateOnNewDocument(preloadFile);
+  }
+
+  if (cookies) {
+    page.setCookie(...cookies);
   }
 
   let errorMessage: string = '';
