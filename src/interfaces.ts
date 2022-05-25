@@ -11,6 +11,7 @@ export interface Options {
   watch: boolean | string;
   headless: boolean;
   output: OutputType;
+  preloadFilePath?: string;
 }
 
 export type APIOptions = Omit<

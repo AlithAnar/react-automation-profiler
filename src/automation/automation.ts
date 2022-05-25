@@ -24,6 +24,7 @@ interface AutomationProps {
   url: string;
   headless: boolean;
   output: OutputType;
+  preloadFilePath?: string;
 }
 
 interface SimpleConfig {
@@ -76,12 +77,18 @@ export default async function automate(
     url,
     headless,
     output,
+    preloadFilePath,
   } = props;
 
   const MOUNT = 'Mount';
 
   const browser = await puppeteer.launch({ headless });
   const page = await browser.newPage();
+
+  if (preloadFilePath) {
+    const preloadFile = await fs.readFile(preloadFilePath, 'utf8');
+    await page.evaluateOnNewDocument(preloadFile);
+  }
 
   let errorMessage: string = '';
 

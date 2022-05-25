@@ -9,6 +9,7 @@ export class AutomationAPI {
     averageOf = 1,
     includeMount = false,
     page,
+    preloadFilePath,
     headless = true,
   }: APIOptions): Promise<IResults> {
     let results: IResults = {};
@@ -23,6 +24,7 @@ export class AutomationAPI {
     ) {
       const props = {
         automationCount,
+        preloadFilePath,
         averageOf,
         cwd: path.resolve(),
         includeMount,
