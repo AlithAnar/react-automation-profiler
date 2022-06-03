@@ -34,7 +34,7 @@ To try react-automation-profiler out:
 ### Clone the repo
 
 ```sh
-git clone git@github.com:rpivo/react-automation-profiler.git
+git clone git@github.com:AlithAnar/react-automation-profiler.git
 ```
 
 ### Start the example app

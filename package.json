@@ -1,6 +1,6 @@
 {
   "name": "@alithanar/react-automation-profiler",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "Automated React profiling and data visualization using React's Profiler API, Puppeteer, and D3.",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -19,7 +19,7 @@
   "types": "./lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rpivo/react-automation-profiler.git"
+    "url": "git+https://github.com/AlithAnar/react-automation-profiler.git"
   },
   "keywords": [
     "react",
@@ -32,9 +32,9 @@
   "author": "Ryan Pivovar <ryanpivovar@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rpivo/react-automation-profiler/issues"
+    "url": "https://github.com/AlithAnar/react-automation-profiler/issues"
   },
-  "homepage": "https://github.com/rpivo/react-automation-profiler#readme",
+  "homepage": "https://github.com/AlithAnar/react-automation-profiler#readme",
   "scripts": {
     "build": "bash ./sh/build.sh",
     "clean": "bash ./sh/clean.sh",
