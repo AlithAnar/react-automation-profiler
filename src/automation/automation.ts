@@ -13,7 +13,14 @@ import {
   OutputType,
 } from '../interfaces.js';
 
-interface AutomationProps {
+export interface Scenario {
+  id: string;
+  shouldSkip?: boolean;
+  onBefore?: (page: puppeteer.Page) => Promise<void>;
+  onProfile: (page: puppeteer.Page) => Promise<void>;
+}
+
+export interface AutomationProps {
   automationCount: number;
   averageOf: number;
   cwd: string;
@@ -26,7 +33,7 @@ interface AutomationProps {
   output: OutputType;
   preloadFilePath?: string;
   cookies?: Protocol.Network.CookieParam[];
-  onBefore?: (page: puppeteer.Page) => Promise<void>;
+  scenarios?: Scenario[];
 }
 
 interface SimpleConfig {
@@ -81,7 +88,7 @@ export default async function automate(
     output,
     preloadFilePath,
     cookies,
-    onBefore,
+    scenarios,
   } = props;
 
   const MOUNT = 'Mount';
@@ -319,6 +326,58 @@ export default async function automate(
   }
 
   async function runFlows() {
+    if (scenarios?.length) {
+      printMessage(NOTICE, {
+        log: `Running programmatic flows.\n`,
+      });
+      await runScenarios(scenarios);
+    } else {
+      printMessage(NOTICE, {
+        log: `Running YAML flows.\n`,
+      });
+      await runYAMLFlows();
+    }
+  }
+
+  async function runScenarios(scenarios: Scenario[]): Promise<void> {
+    try {
+      let attempts = 0;
+
+      for (let i = 0; i < scenarios.length; i++) {
+        const scenario = scenarios[i];
+
+        if (scenario.shouldSkip) {
+          printMessage(NOTICE, {
+            log: `Scenario "${scenario.id}": skipped`,
+          });
+          continue;
+        }
+
+        printMessage(NOTICE, {
+          log: `Scenario "${scenario.id}": attempt #${attempts + 1}`,
+        });
+
+        await scenario.onBefore?.(page);
+        await scenario.onProfile(page);
+
+        const success = await collectLogs({
+          label: scenario.id,
+          numberOfInteractions: 0, // TODO
+        });
+        if (!success) {
+          if (attempts++ < 3) i -= 1;
+          else
+            printMessage(NOTICE, {
+              log: `Automation flow "${scenario.id}" did not produce any renders.\n`,
+            });
+        }
+      }
+    } catch (error) {
+      handleRunFlowsError(error);
+    }
+  }
+
+  async function runYAMLFlows() {
     try {
       const flows = await readAutomationFile();
 
@@ -344,21 +403,25 @@ export default async function automate(
             });
         }
       }
-    } catch (e) {
-      const isErrorObjectEmpty = Object.keys(<Error>e).length === 0;
-      const description =
-        isErrorObjectEmpty &&
-        ` This was likely caused by one of these issues:
-        - The react.automation YAML file could not be found at the root of your repo.
-        - The react.automation file is using a selector that does not exist.`;
-      errorMessage = `An error occurred while trying to run automation flows.${
-        description ? description : ''
-      }`;
-      printMessage(ERROR, {
-        e: isErrorObjectEmpty ? undefined : <Error>e,
-        log: errorMessage,
-      });
+    } catch (error) {
+      handleRunFlowsError(error);
     }
+  }
+
+  function handleRunFlowsError(error: unknown) {
+    const isErrorObjectEmpty = Object.keys(<Error>error).length === 0;
+    const description =
+      isErrorObjectEmpty &&
+      ` This was likely caused by one of these issues:
+      - The react.automation YAML file could not be found at the root of your repo.
+      - The react.automation file is using a selector that does not exist.`;
+    errorMessage = `An error occurred while trying to run automation flows.${
+      description ? description : ''
+    }`;
+    printMessage(ERROR, {
+      e: isErrorObjectEmpty ? undefined : <Error>error,
+      log: errorMessage,
+    });
   }
 
   async function startServer() {
@@ -375,10 +438,6 @@ export default async function automate(
     height: 1080,
     width: 1920,
   });
-
-  if (onBefore) {
-    await onBefore(page);
-  }
 
   await collectLogs({ label: MOUNT });
   await runFlows();

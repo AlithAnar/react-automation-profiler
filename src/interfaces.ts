@@ -1,3 +1,4 @@
+import { Scenario } from 'automation/automation.js';
 import { Protocol } from 'puppeteer';
 
 export enum OutputType {
@@ -15,6 +16,7 @@ export interface Options {
   output: OutputType;
   preloadFilePath?: string;
   cookies?: Protocol.Network.CookieParam[];
+  scenarios?: Scenario[];
 }
 
 export type APIOptions = Omit<
