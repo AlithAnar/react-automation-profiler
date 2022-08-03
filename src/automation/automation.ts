@@ -26,6 +26,7 @@ interface AutomationProps {
   output: OutputType;
   preloadFilePath?: string;
   cookies?: Protocol.Network.CookieParam[];
+  onBefore?: (page: puppeteer.Page) => Promise<void>;
 }
 
 interface SimpleConfig {
@@ -80,6 +81,7 @@ export default async function automate(
     output,
     preloadFilePath,
     cookies,
+    onBefore,
   } = props;
 
   const MOUNT = 'Mount';
@@ -373,6 +375,11 @@ export default async function automate(
     height: 1080,
     width: 1920,
   });
+
+  if (onBefore) {
+    await onBefore(page);
+  }
+
   await collectLogs({ label: MOUNT });
   await runFlows();
   await browser.close();
