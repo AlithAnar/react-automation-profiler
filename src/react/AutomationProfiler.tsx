@@ -9,7 +9,10 @@ function handleRender(
   commitTime: number,
   interactions: Set<{ id: number; name: string; timestamp: number }>
 ): void {
-  if (!window.profiler) window.profiler = [];
+  if (!window.profiler) {
+    window.profiler = [];
+    window.isProfilingEnabled = true;
+  }
   window.profiler.push({
     actualDuration,
     baseDuration,

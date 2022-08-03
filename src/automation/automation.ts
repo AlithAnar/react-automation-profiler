@@ -232,6 +232,12 @@ export default async function automate(
     }
   }
 
+  async function setIsLoggingEnabled(isLoggingEnabled: boolean): Promise<void> {
+    await page.evaluate((isEnabled) => {
+      window.isProfilingEnabled = isEnabled;
+    }, isLoggingEnabled);
+  }
+
   async function collectLogs({
     label,
     numberOfInteractions = 0,
@@ -252,6 +258,7 @@ export default async function automate(
     }
     await page.evaluate(() => {
       window.profiler = [];
+      window.isProfilingEnabled = true;
     });
     return true;
   }
@@ -357,7 +364,10 @@ export default async function automate(
           log: `Scenario "${scenario.id}": attempt #${attempts + 1}`,
         });
 
+        await setIsLoggingEnabled(false);
         await scenario.onBefore?.(page);
+        await setIsLoggingEnabled(true);
+
         await scenario.onProfile(page);
 
         const success = await collectLogs({
