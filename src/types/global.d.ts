@@ -9,6 +9,7 @@ declare global {
       phase: string;
       startTime: number;
     }[];
+    isProfilingEnabled: boolean;
   }
 }
 

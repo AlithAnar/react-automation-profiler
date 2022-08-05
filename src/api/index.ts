@@ -1,4 +1,4 @@
-import automate from '../automation/automation.js';
+import automate, { AutomationProps } from '../automation/automation.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { AutomationResultsStorage } from '../automation/AutomationResultsStorage.js';
@@ -11,6 +11,7 @@ export class AutomationAPI {
     page,
     preloadFilePath,
     cookies,
+    scenarios,
     headless = true,
   }: APIOptions): Promise<IResults> {
     let results: IResults = {};
@@ -23,7 +24,7 @@ export class AutomationAPI {
       automationCount <= averageOf;
       automationCount++
     ) {
-      const props = {
+      const props: AutomationProps = {
         automationCount,
         preloadFilePath,
         averageOf,
@@ -36,6 +37,7 @@ export class AutomationAPI {
         headless,
         cookies,
         output: OutputType.JSON,
+        scenarios,
       };
 
       const automationResult = await automate(props, resultsStorage);
