@@ -1,4 +1,4 @@
-enum MessageTypes {
+const enum MessageTypes {
   AUTOMATION_START = 'AUTOMATION_START',
   AUTOMATION_STOP = 'AUTOMATION_STOP',
   ERROR = 'ERROR',

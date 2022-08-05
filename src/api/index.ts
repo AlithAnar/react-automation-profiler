@@ -1,8 +1,8 @@
-import automate, { AutomationProps } from '../automation/automation.js';
+import automate, { AutomationProps } from '../automation/automation';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { AutomationResultsStorage } from '../automation/AutomationResultsStorage.js';
-import { IResults, APIOptions, OutputType } from '../interfaces.js';
+import { AutomationResultsStorage } from '../automation/AutomationResultsStorage';
+import { IResults, APIOptions, OutputType } from '../interfaces';
+import { resolve } from 'path';
 
 export class AutomationAPI {
   static async run({
@@ -15,7 +15,7 @@ export class AutomationAPI {
     headless = true,
   }: APIOptions): Promise<IResults> {
     let results: IResults = {};
-    const scriptPath = fileURLToPath(import.meta.url);
+    const scriptPath = resolve('./lib/api/index.js');
     const packagePath = `${scriptPath.slice(0, scriptPath.lastIndexOf('/'))}`;
     const resultsStorage = new AutomationResultsStorage();
 

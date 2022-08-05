@@ -1,4 +1,4 @@
-import { getFileName } from '../utils/util.js';
+import { getFileName } from '../utils/util';
 
 export type MouseMoveEvent = {
   target: {

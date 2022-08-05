@@ -1,6 +1,6 @@
 {
   "name": "@alithanar/react-automation-profiler",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "description": "Automated React profiling and data visualization using React's Profiler API, Puppeteer, and D3.",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -15,7 +15,6 @@
   "bin": {
     "rap": "./lib/bin.js"
   },
-  "type": "module",
   "types": "./lib/index.d.ts",
   "repository": {
     "type": "git",

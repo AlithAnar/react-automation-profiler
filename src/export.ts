@@ -1,11 +1,11 @@
 #!/usr/bin/env node --no-warnings
 import fs from 'fs/promises';
 import jsdom from 'jsdom';
-import { fileURLToPath } from 'url';
-import { MessageTypes, printMessage } from './utils/util.js';
+import * as utils from './utils/util';
+import { resolve } from 'path';
 
 (async function () {
-  const scriptPath = fileURLToPath(import.meta.url);
+  const scriptPath = resolve('./lib/export.js');
   const path = `${scriptPath.slice(0, scriptPath.lastIndexOf('/'))}`;
   const { JSDOM } = jsdom;
 
@@ -26,7 +26,7 @@ import { MessageTypes, printMessage } from './utils/util.js';
       document.documentElement.outerHTML
     );
   } catch (e) {
-    printMessage(MessageTypes.ERROR, {
+    utils.printMessage(utils.MessageTypes.ERROR, {
       e: <Error>e,
       log: 'An error occurred while appending charts.js to index.html.',
     });

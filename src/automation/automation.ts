@@ -4,14 +4,14 @@ import { minify } from 'html-minifier-terser';
 import jsdom from 'jsdom';
 import yaml from 'js-yaml';
 import puppeteer, { Protocol } from 'puppeteer';
-import { getFileName, MessageTypes, printMessage } from '../utils/util.js';
-import { IAutomationResultsStorage } from './AutomationResultsStorage.js';
+import { getFileName, MessageTypes, printMessage } from '../utils/util';
+import { IAutomationResultsStorage } from './AutomationResultsStorage';
 import {
   AutomationResult,
   Interaction,
   IResults,
   OutputType,
-} from '../interfaces.js';
+} from '../interfaces';
 
 export interface Scenario {
   id: string;
@@ -68,8 +68,6 @@ enum Actions {
   GOTO = 'goto',
   WAIT = 'wait',
 }
-
-const { ERROR, NOTICE } = MessageTypes;
 
 export default async function automate(
   props: AutomationProps,
@@ -146,7 +144,7 @@ export default async function automate(
       await generateExport(document);
     } catch (e) {
       errorMessage = 'Could not append JSON data to HTML file.';
-      printMessage(ERROR, { e: <Error>e, log: errorMessage });
+      printMessage(MessageTypes.ERROR, { e: <Error>e, log: errorMessage });
     }
   }
 
@@ -227,7 +225,7 @@ export default async function automate(
       return null;
     } catch (e) {
       errorMessage = 'An error occurred while calculating averages.';
-      printMessage(ERROR, { e: <Error>e, log: errorMessage });
+      printMessage(MessageTypes.ERROR, { e: <Error>e, log: errorMessage });
       return null;
     }
   }
@@ -278,7 +276,7 @@ export default async function automate(
       );
     } catch (e) {
       errorMessage = 'An error occurred while generating a new export file.';
-      printMessage(ERROR, { e: <Error>e, log: errorMessage });
+      printMessage(MessageTypes.ERROR, { e: <Error>e, log: errorMessage });
     }
   }
 
@@ -289,7 +287,9 @@ export default async function automate(
       if (Object.values(Actions).includes(actionType as Actions)) {
         const selectorStr = selector.join(' ');
 
-        printMessage(NOTICE, { log: `${actionType}: ${selectorStr}` });
+        printMessage(MessageTypes.NOTICE, {
+          log: `${actionType}: ${selectorStr}`,
+        });
 
         switch (actionType) {
           case Actions.CLICK:
@@ -310,7 +310,7 @@ export default async function automate(
         }
       } else {
         errorMessage = 'One or more action types provided was not valid.';
-        throw printMessage(ERROR, { log: errorMessage });
+        throw printMessage(MessageTypes.ERROR, { log: errorMessage });
       }
     }
   }
@@ -334,12 +334,12 @@ export default async function automate(
 
   async function runFlows() {
     if (scenarios?.length) {
-      printMessage(NOTICE, {
+      printMessage(MessageTypes.NOTICE, {
         log: `Running programmatic flows.\n`,
       });
       await runScenarios(scenarios);
     } else {
-      printMessage(NOTICE, {
+      printMessage(MessageTypes.NOTICE, {
         log: `Running YAML flows.\n`,
       });
       await runYAMLFlows();
@@ -354,13 +354,13 @@ export default async function automate(
         const scenario = scenarios[i];
 
         if (scenario.shouldSkip) {
-          printMessage(NOTICE, {
+          printMessage(MessageTypes.NOTICE, {
             log: `Scenario "${scenario.id}": skipped`,
           });
           continue;
         }
 
-        printMessage(NOTICE, {
+        printMessage(MessageTypes.NOTICE, {
           log: `Scenario "${scenario.id}": attempt #${attempts + 1}`,
         });
 
@@ -377,7 +377,7 @@ export default async function automate(
         if (!success) {
           if (attempts++ < 3) i -= 1;
           else
-            printMessage(NOTICE, {
+            printMessage(MessageTypes.NOTICE, {
               log: `Automation flow "${scenario.id}" did not produce any renders.\n`,
             });
         }
@@ -408,7 +408,7 @@ export default async function automate(
         if (!success) {
           if (attempts++ < 3) i -= 1;
           else
-            printMessage(NOTICE, {
+            printMessage(MessageTypes.NOTICE, {
               log: `Automation flow "${keys[i]}" did not produce any renders.\n`,
             });
         }
@@ -428,7 +428,7 @@ export default async function automate(
     errorMessage = `An error occurred while trying to run automation flows.${
       description ? description : ''
     }`;
-    printMessage(ERROR, {
+    printMessage(MessageTypes.ERROR, {
       e: isErrorObjectEmpty ? undefined : <Error>error,
       log: errorMessage,
     });
@@ -469,7 +469,7 @@ export default async function automate(
     await startServer();
 
   if (errorMessage)
-    throw printMessage(ERROR, {
+    throw printMessage(MessageTypes.ERROR, {
       log: 'Automation could not complete because of the above errors.',
     });
 

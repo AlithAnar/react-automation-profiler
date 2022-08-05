@@ -1,4 +1,4 @@
-import { Scenario } from 'automation/automation.js';
+import { Scenario } from 'automation/automation';
 import { Protocol } from 'puppeteer';
 
 export enum OutputType {

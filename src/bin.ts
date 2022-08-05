@@ -2,15 +2,13 @@
 import browserSync from 'browser-sync';
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import yargs from 'yargs';
-import automate from './automation/automation.js';
-import { MessageTypes, printMessage } from './utils/util.js';
+import automate from './automation/automation';
+import { MessageTypes, printMessage } from './utils/util';
 import { hideBin } from 'yargs/helpers';
-import { AutomationResultsStorage } from './automation/AutomationResultsStorage.js';
-import { Options, OutputType } from './interfaces.js';
-
-const { AUTOMATION_START, AUTOMATION_STOP, ERROR } = MessageTypes;
+import { AutomationResultsStorage } from './automation/AutomationResultsStorage';
+import { Options, OutputType } from './interfaces';
+import { resolve } from 'path';
 
 console.log(`
   █▀█ ▄▀█ █▀█
@@ -68,7 +66,7 @@ const {
 } = <Options>options;
 
 const cwd = path.resolve();
-const scriptPath = fileURLToPath(import.meta.url);
+const scriptPath = resolve('./lib/bin.js');
 const packagePath = `${scriptPath.slice(0, scriptPath.lastIndexOf('/'))}`;
 const serverPath = `http://localhost:${port + 1}`;
 
@@ -107,7 +105,7 @@ async function handleAutomation() {
     automationCount <= averageOf;
     automationCount++
   ) {
-    printMessage(AUTOMATION_START);
+    printMessage(MessageTypes.AUTOMATION_START);
 
     const automationProps = {
       automationCount,
@@ -124,7 +122,7 @@ async function handleAutomation() {
 
     await automate(automationProps, resultsStorage);
 
-    printMessage(AUTOMATION_STOP, { log: getStopMessage(output) });
+    printMessage(MessageTypes.AUTOMATION_STOP, { log: getStopMessage(output) });
 
     if (!isServerReady && automationCount === averageOf) isServerReady = true;
   }
@@ -144,32 +142,33 @@ function setupProxy() {
 
 // run
 /***********************/
+(async () => {
+  try {
+    await handleAutomation();
+  } catch (error) {
+    printMessage(MessageTypes.AUTOMATION_STOP, { e: error as Error });
+    process.exit();
+  }
 
-try {
-  await handleAutomation();
-} catch (error) {
-  printMessage(AUTOMATION_STOP, { e: error as Error });
-  process.exit();
-}
+  if (output === OutputType.CHART) {
+    setupProxy();
 
-if (output === OutputType.CHART) {
-  setupProxy();
+    if (watch) {
+      const watchDir = typeof watch === 'string' ? `${cwd}/${watch}` : cwd;
 
-  if (watch) {
-    const watchDir = typeof watch === 'string' ? `${cwd}/${watch}` : cwd;
+      const events = fs.watch(
+        watchDir,
+        { recursive: true }
+        // node types are saying that fs.watch returns AsyncIterable<string>, but
+        // it's actually AsyncIterable<{ eventType: string; filename: string }>.
+        // Have to cast as unknown first to get around this.
+      ) as unknown as AsyncIterable<{ eventType: string; filename: string }>;
 
-    const events = fs.watch(
-      watchDir,
-      { recursive: true }
-      // node types are saying that fs.watch returns AsyncIterable<string>, but
-      // it's actually AsyncIterable<{ eventType: string; filename: string }>.
-      // Have to cast as unknown first to get around this.
-    ) as unknown as AsyncIterable<{ eventType: string; filename: string }>;
-
-    for await (const { eventType, filename } of events) {
-      if (eventType === 'change' && !filename.startsWith('node_modules')) {
-        checkShouldAutomate();
+      for await (const { eventType, filename } of events) {
+        if (eventType === 'change' && !filename.startsWith('node_modules')) {
+          checkShouldAutomate();
+        }
       }
     }
   }
-}
+})();

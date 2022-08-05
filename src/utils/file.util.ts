@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { MessageTypes, printMessage } from './util.js';
+import { MessageTypes, printMessage } from './util';
 
 async function deleteJsonFiles(packagePath: string) {
   try {
