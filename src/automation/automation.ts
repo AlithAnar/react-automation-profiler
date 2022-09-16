@@ -92,16 +92,33 @@ export default async function automate(
   const MOUNT = 'Mount';
 
   const browser = await puppeteer.launch({ headless });
-  const page = await browser.newPage();
 
-  if (preloadFilePath) {
-    const preloadFile = await fs.readFile(preloadFilePath, 'utf8');
-    await page.evaluateOnNewDocument(preloadFile);
+  async function initPage(): Promise<puppeteer.Page> {
+    const newPage = await browser.newPage();
+
+    if (preloadFilePath) {
+      const preloadFile = await fs.readFile(preloadFilePath, 'utf8');
+      await newPage.evaluateOnNewDocument(preloadFile);
+    }
+
+    if (cookies) {
+      newPage.setCookie(...cookies);
+    }
+
+    return newPage;
   }
 
-  if (cookies) {
-    page.setCookie(...cookies);
+  async function launchWithUrl() {
+    await page.goto(url);
+
+    await page.setViewport({
+      deviceScaleFactor: 1,
+      height: 1080,
+      width: 1920,
+    });
   }
+
+  let page = await initPage();
 
   let errorMessage: string = '';
 
@@ -246,7 +263,7 @@ export default async function automate(
     if (label !== MOUNT || (label === MOUNT && includeMount)) {
       const logs = await page.evaluate(() => window.profiler);
 
-      if (logs.length === 0) return false;
+      if (logs?.length === 0) return false;
 
       resultsStorage.appendResult(label, {
         logs,
@@ -360,6 +377,11 @@ export default async function automate(
           continue;
         }
 
+        if (i > 0) {
+          page = await initPage();
+        }
+        await launchWithUrl();
+
         printMessage(MessageTypes.NOTICE, {
           log: `Scenario "${scenario.id}": attempt #${attempts + 1}`,
         });
@@ -380,6 +402,10 @@ export default async function automate(
             printMessage(MessageTypes.NOTICE, {
               log: `Automation flow "${scenario.id}" did not produce any renders.\n`,
             });
+        }
+
+        if (!page.isClosed()) {
+          page.close();
         }
       }
     } catch (error) {
@@ -429,7 +455,7 @@ export default async function automate(
       description ? description : ''
     }`;
     printMessage(MessageTypes.ERROR, {
-      e: isErrorObjectEmpty ? undefined : <Error>error,
+      e: error ? <Error>error : new Error('Unspecified error'),
       log: errorMessage,
     });
   }
@@ -441,13 +467,9 @@ export default async function automate(
     app.listen(serverPort);
   }
 
-  await page.goto(url);
-
-  await page.setViewport({
-    deviceScaleFactor: 1,
-    height: 1080,
-    width: 1920,
-  });
+  if (!scenarios) {
+    await launchWithUrl();
+  }
 
   await collectLogs({ label: MOUNT });
   await runFlows();
@@ -468,10 +490,12 @@ export default async function automate(
   )
     await startServer();
 
-  if (errorMessage)
-    throw printMessage(MessageTypes.ERROR, {
+  if (errorMessage) {
+    printMessage(MessageTypes.ERROR, {
       log: 'Automation could not complete because of the above errors.',
     });
+    throw new Error(errorMessage);
+  }
 
   return results;
 }

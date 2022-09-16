@@ -50,7 +50,7 @@ function printMessage(
     }
     case MessageTypes.ERROR: {
       const { e = null, log } = params!;
-      message = `❌ ${log}${e ? `: ${JSON.stringify(e)}` : ''}\n`;
+      message = `❌ ${log}${e ? `: ${e.message || JSON.stringify(e)}` : ''}\n`;
       break;
     }
     case MessageTypes.NOTICE: {
