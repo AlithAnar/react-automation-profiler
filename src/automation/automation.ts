@@ -30,6 +30,7 @@ export interface AutomationProps {
   serverPort: number;
   url: string;
   headless: boolean;
+  browserArgs?: string[];
   output: OutputType;
   preloadFilePath?: string;
   cookies?: Protocol.Network.CookieParam[];
@@ -83,6 +84,7 @@ export default async function automate(
     serverPort,
     url,
     headless,
+    browserArgs,
     output,
     preloadFilePath,
     cookies,
@@ -91,7 +93,7 @@ export default async function automate(
 
   const MOUNT = 'Mount';
 
-  const browser = await puppeteer.launch({ headless });
+  const browser = await puppeteer.launch({ headless, args: browserArgs });
 
   async function initPage(): Promise<puppeteer.Page> {
     const newPage = await browser.newPage();

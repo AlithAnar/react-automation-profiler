@@ -13,6 +13,7 @@ export interface Options {
   port: number;
   watch: boolean | string;
   headless: boolean;
+  browserArgs?: string[];
   output: OutputType;
   preloadFilePath?: string;
   cookies?: Protocol.Network.CookieParam[];

@@ -13,6 +13,7 @@ export class AutomationAPI {
     cookies,
     scenarios,
     headless = true,
+    browserArgs = [],
   }: APIOptions): Promise<IResults> {
     let results: IResults = {};
     const scriptPath = resolve('./lib/api/index.js');
@@ -35,6 +36,7 @@ export class AutomationAPI {
         serverPort: 0,
         url: page,
         headless,
+        browserArgs,
         cookies,
         output: OutputType.JSON,
         scenarios,
